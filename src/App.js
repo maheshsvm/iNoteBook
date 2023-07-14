@@ -12,6 +12,7 @@ function App() {
       <NoteState>
         <Router>
           <NavBar />
+          <Alert/>
           {/* <Alert message="hey this is a cool website"/> */}
           <div className="container">
             <Routes>

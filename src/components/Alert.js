@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import NoteContext from '../context/notes/noteContext'
 
-const Alert = ({message}) => {
+const Alert = () => {
+    const context = useContext(NoteContext);
+    const {alert}  = context
     return (
-        <div>
-            <div class="alert alert-primary" role="alert">
-                {message}
-            </div>
+        <div style={{height : "40px"}}>
+            {alert && (<div className="alert alert-primary" role="alert">
+                {alert.message}
+            </div>)}
         </div>
     )
 }

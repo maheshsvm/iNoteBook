@@ -1,106 +1,93 @@
 import NoteContext from "./noteContext"
 import { useState } from "react"
 const NoteState = (props) => {
-  const initialNotes = [
-    {
-      "_id": "64a701c7d7d980709409135d",
-      "user": "64a5941e615acecbe5c2d76e",
-      "title": "note 1",
-      "description": "note 1 is a good note",
-      "tag": "funny",
-      "date": "2023-07-06T18:02:47.556Z",
-      "__v": 0
-    },
-    {
-      "_id": "64a701c9d7d980709409135f",
-      "user": "64a5941e615acecbe5c2d76e",
-      "title": "note 1",
-      "description": "note 1 is a good note",
-      "tag": "funny",
-      "date": "2023-07-06T18:02:49.130Z",
-      "__v": 0
-    },
-    {
-      "_id": "64a701c9d7d9807094091361",
-      "user": "64a5941e615acecbe5c2d76e",
-      "title": "note 1",
-      "description": "note 1 is a good note",
-      "tag": "funny",
-      "date": "2023-07-06T18:02:49.991Z",
-      "__v": 0
-    },
-    {
-      "_id": "64a701edd7d9807094091367",
-      "user": "64a5941e615acecbe5c2d76e",
-      "title": "news is funny",
-      "description": "today a mokey caught a dog by his teeth",
-      "tag": "funny",
-      "date": "2023-07-06T18:03:25.664Z",
-      "__v": 0
-    },
-    {
-      "_id": "64a701edd7d9807094091367",
-      "user": "64a5941e615acecbe5c2d76e",
-      "title": "news is funny",
-      "description": "today a mokey caught a dog by his teeth",
-      "tag": "funny",
-      "date": "2023-07-06T18:03:25.664Z",
-      "__v": 0
-    },
-    {
-      "_id": "64a701edd7d9807094091367",
-      "user": "64a5941e615acecbe5c2d76e",
-      "title": "news is funny",
-      "description": "today a mokey caught a dog by his teeth",
-      "tag": "funny",
-      "date": "2023-07-06T18:03:25.664Z",
-      "__v": 0
-    },
-    {
-      "_id": "64a701edd7d9807094091367",
-      "user": "64a5941e615acecbe5c2d76e",
-      "title": "news is funny",
-      "description": "today a mokey caught a dog by his teeth",
-      "tag": "funny",
-      "date": "2023-07-06T18:03:25.664Z",
-      "__v": 0
+    const host = "http://localhost:5000";
+    const [notes, setNotes] = useState([])
+    const [alert, setAlert] = useState(null)
+
+    const showAlert = (message)=>{
+        setAlert({message});
+        setTimeout(() => {
+            setAlert(null)
+        }, 3000);
     }
-  ]
 
-  const [notes, setNotes] = useState(initialNotes)
+    // fetching all notes
+    const fetchNotes = async () => {
+        const url = `${host}/api/notes/fetchallnotes`
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRhNTk0MWU2MTVhY2VjYmU1YzJkNzZlIn0sImlhdCI6MTY4ODU3NTA3N30.Hx2v8F0WGhkmI_7rSOirxQWq0hmPukg6FGKKcye8x2o"
+            }
+        });
 
-  //adding a note
-  const addNote = ({title , description , tag})=>{
-    console.log("adding a new note")
-    let note = {
-      "_id": "64a701edd7d9807094091367",
-      "user": "64a5941e615acecbe5c2d76e",
-      "title": title,
-      "description": description,
-      "tag": tag,
-      "date": "2023-07-06T18:03:25.664Z",
-      "__v": 0
+        const fetchedNotes = await response.json();
+        // console.log(fetchedNotes)
+        setNotes(fetchedNotes);
     }
-    setNotes(notes.concat(note))
-  }
 
-  // deleting a note
-  const deleteNote = (id)=>{
-    console.log("deleting note with id " + id)
-    const newNotes = notes.filter((note) =>{return note._id != id});
-    setNotes(newNotes)
-  }
+    //adding a note
+    const addNote = async ({ title, description, tag }) => {
+        console.log("adding a new note......")
+        let note = {
+            "_id": "64a701edd7d9807094091367",
+            "user": "64a5941e615acecbe5c2d76e",
+            "title": title,
+            "description": description,
+            "tag": tag,
+            "date": "2023-07-06T18:03:25.664Z",
+            "__v": 0
+        }
 
-  // update a note
-  const updateNote = (id)=>{
+        const url = `${host}/api/notes/addnote`
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRhNTk0MWU2MTVhY2VjYmU1YzJkNzZlIn0sImlhdCI6MTY4ODU3NTA3N30.Hx2v8F0WGhkmI_7rSOirxQWq0hmPukg6FGKKcye8x2o"
+            },
+            body: JSON.stringify(note)
+        });
 
-  }
+        await fetchNotes()
 
-  return (
-    <NoteContext.Provider value={{ notes, addNote , deleteNote , updateNote }}>
-      {props.children}
-    </NoteContext.Provider>
-  )
+        showAlert("Note added succesfully");
+        // setNotes(notes.concat(note))
+    }
+
+    // deleting a note
+    const deleteNote = async (id) => {
+        console.log("deleting note with id " + id);
+        const url = `${host}/api/notes/deletenote/${id}`;
+        const response = await fetch(url, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRhNTk0MWU2MTVhY2VjYmU1YzJkNzZlIn0sImlhdCI6MTY4ODU3NTA3N30.Hx2v8F0WGhkmI_7rSOirxQWq0hmPukg6FGKKcye8x2o"
+            }
+        });
+
+        const status = await response;
+        console.log(status);
+        await fetchNotes();
+
+        showAlert("Note deleted succesfully bro")
+        // const newNotes = notes.filter((note) =>{return note._id !== id});
+        // setNotes(newNotes)
+    }
+
+    // update a note
+    const updateNote = (id) => {
+
+    }
+
+    return (
+        <NoteContext.Provider value={{ notes, addNote, deleteNote, updateNote, fetchNotes , alert }}>
+            {props.children}
+        </NoteContext.Provider>
+    )
 }
 
 export default NoteState

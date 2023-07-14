@@ -3,22 +3,21 @@ import NoteContext from '../context/notes/noteContext';
 
 const NoteItem = (props) => {
     const context = useContext(NoteContext);
-    const {deleteNote} = context;
+    const { deleteNote } = context;
 
     const { title, description } = props.note;
-    const handleClick = ()=>{
-        deleteNote(props.note._id)
-
+    const handleClick = async () => {
+        await deleteNote(props.note._id)
     }
     return (
         <div className='col-md-3 my-3'>
-            <div class="card" >
-                    <div class="card-body">
-                        <h5 class="card-title">{title}</h5>
-                        <p class="card-text">{description}</p>
-                        <i class="fa-solid fa-trash " onClick={handleClick}></i>
-                        <i class="fa-solid fa-pen-to-square mx-3"></i>
-                    </div>
+            <div className="card" >
+                <div className="card-body">
+                    <h5 className="card-title">{title}</h5>
+                    <p className="card-text">{description}</p>
+                    <i className="fa-solid fa-trash " onClick={handleClick}></i>
+                    <i className="fa-solid fa-pen-to-square mx-3" onClick={() => props.updateNote(props.note)}></i>
+                </div>
             </div>
         </div>
     )
