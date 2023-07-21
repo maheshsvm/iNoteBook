@@ -2,25 +2,46 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import NoteContext from '../context/notes/noteContext';
 import NoteItem from '../components/NoteItem'
 import AddNote from './AddNote';
+import { useNavigate } from 'react-router-dom';
 
 const Notes = () => {
     const context = useContext(NoteContext);
-    const { notes, fetchNotes } = context;
+    const { notes, fetchNotes, editNote } = context;
     const [note, setNote] = useState({ etitle: "", edescription: "", etag: "default" })
+    const [currentNoteId, setCurrentNoteId] = useState(null);
+    const navigate = useNavigate();
+
     const ref = useRef(null)
+    const refClose = useRef(null);
 
     useEffect(() => {
-        fetchNotes();
+        if (!localStorage.getItem('token'))
+            navigate('/login')
+        else {
+            fetchNotes();
+        }
+        // eslint-disable-next-line
     }, []);
 
     const updateNote = (currentNote) => {
+        // console.log("update note called")
+        setCurrentNoteId(currentNote._id)
+        console.log(currentNoteId)
         ref.current.click();
         setNote({ etitle: currentNote.title, edescription: currentNote.description, etag: currentNote.tag });
     }
 
     const handleClick = (e) => {
-        console.log("updating note")
+        console.log("updating note....")
         e.preventDefault();
+        console.log(currentNoteId);
+        let noteBody = {
+            "title": note.etitle,
+            "description": note.edescription,
+            "tag": note.etag
+        }
+        editNote(currentNoteId, noteBody);
+        refClose.current.click();
     }
 
     const onChange = (e) => {
@@ -58,14 +79,17 @@ const Notes = () => {
                             </form>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" ref={refClose}>Close</button>
                             <button type="button" className="btn btn-primary" onClick={handleClick}>Update Note</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="container my-3">
+            <div className=" my-3">
                 <h2>Your Notes</h2>
+                <div className="container">
+                    {notes.length === 0 && 'No Notes to display'}
+                </div>
                 <div className="row">
 
                     {notes.map((note) => {

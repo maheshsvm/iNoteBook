@@ -5,8 +5,8 @@ const NoteState = (props) => {
     const [notes, setNotes] = useState([])
     const [alert, setAlert] = useState(null)
 
-    const showAlert = (message)=>{
-        setAlert({message});
+    const showAlert = (message , type) => {
+        setAlert({ message ,type });
         setTimeout(() => {
             setAlert(null)
         }, 3000);
@@ -19,7 +19,7 @@ const NoteState = (props) => {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRhNTk0MWU2MTVhY2VjYmU1YzJkNzZlIn0sImlhdCI6MTY4ODU3NTA3N30.Hx2v8F0WGhkmI_7rSOirxQWq0hmPukg6FGKKcye8x2o"
+                "auth-token": localStorage.getItem("token")
             }
         });
 
@@ -30,7 +30,7 @@ const NoteState = (props) => {
 
     //adding a note
     const addNote = async ({ title, description, tag }) => {
-        console.log("adding a new note......")
+        // console.log("adding a new note......")
         let note = {
             "_id": "64a701edd7d9807094091367",
             "user": "64a5941e615acecbe5c2d76e",
@@ -42,49 +42,62 @@ const NoteState = (props) => {
         }
 
         const url = `${host}/api/notes/addnote`
-        const response = await fetch(url, {
+        await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRhNTk0MWU2MTVhY2VjYmU1YzJkNzZlIn0sImlhdCI6MTY4ODU3NTA3N30.Hx2v8F0WGhkmI_7rSOirxQWq0hmPukg6FGKKcye8x2o"
+                "auth-token": localStorage.getItem("token")
             },
             body: JSON.stringify(note)
         });
 
         await fetchNotes()
 
-        showAlert("Note added succesfully");
+        showAlert("Note added succesfully" , "success");
         // setNotes(notes.concat(note))
     }
 
     // deleting a note
     const deleteNote = async (id) => {
-        console.log("deleting note with id " + id);
+        // console.log("deleting note with id " + id);
         const url = `${host}/api/notes/deletenote/${id}`;
-        const response = await fetch(url, {
+        await fetch(url, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
-                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRhNTk0MWU2MTVhY2VjYmU1YzJkNzZlIn0sImlhdCI6MTY4ODU3NTA3N30.Hx2v8F0WGhkmI_7rSOirxQWq0hmPukg6FGKKcye8x2o"
+                "auth-token": localStorage.getItem("token")
             }
         });
 
-        const status = await response;
-        console.log(status);
+        // const status = await response;
+        // console.log(status);
         await fetchNotes();
 
-        showAlert("Note deleted succesfully bro")
+        showAlert("Note deleted succesfully " , "success")
         // const newNotes = notes.filter((note) =>{return note._id !== id});
         // setNotes(newNotes)
     }
 
-    // update a note
-    const updateNote = (id) => {
+    // edit a note
+    const editNote = async (id , note) => {
+        const url = `${host}/api/notes/updatenote/${id}`;
+        await fetch(url, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "auth-token": localStorage.getItem("token")
+            },
+            body : JSON.stringify(note)
+        });
 
+        // const result = await response.json();
+        // console.log(result);
+        fetchNotes();
+        showAlert("Note Updated succesfully" , "success");
     }
 
     return (
-        <NoteContext.Provider value={{ notes, addNote, deleteNote, updateNote, fetchNotes , alert }}>
+        <NoteContext.Provider value={{ notes, addNote, deleteNote, editNote, fetchNotes, alert , showAlert }}>
             {props.children}
         </NoteContext.Provider>
     )

@@ -6,7 +6,7 @@ const Alert = () => {
     const {alert}  = context
     return (
         <div style={{height : "40px"}}>
-            {alert && (<div className="alert alert-primary" role="alert">
+            {alert && (<div className={`alert alert-${alert.type}`} role="alert">
                 {alert.message}
             </div>)}
         </div>
